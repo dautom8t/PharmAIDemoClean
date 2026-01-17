@@ -16,7 +16,7 @@ from typing import List, Optional
 from sqlalchemy import Column, DateTime, Enum as SAEnum, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Session, relationship
 
-from models.import database
+from models import database
 from models.schemas import (
     EventCreate,
     EventRead,
