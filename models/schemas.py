@@ -6,6 +6,14 @@ data validation at the API boundary.  Using Pydantic helps catch invalid
 inputs early and documents the API automatically.
 """
 
+"""
+Pydantic models and enums used throughout the PharmAI middleware API.
+
+These models define the shape of request and response bodies and enforce
+data validation at the API boundary. Using Pydantic helps catch invalid
+inputs early and documents the API automatically.
+"""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -17,12 +25,12 @@ from pydantic import BaseModel, Field
 
 class WorkflowState(str, Enum):
     """High level state of a medication workflow."""
-    ORDERED = "ordered"            # Initial state after order entry
-    PENDING_ACCESS = "pending_access"  # Awaiting benefits verification / prior auth
-    ACCESS_GRANTED = "access_granted"  # Coverage approved; ready for dispense
-    DISPENSED = "dispensed"            # Medication dispensed to patient
-    COMPLETED = "completed"            # Therapy start confirmed
-    FAILED = "failed"                  # Workflow terminated due to denial or cancellation
+    ORDERED = "ordered"
+    PENDING_ACCESS = "pending_access"
+    ACCESS_GRANTED = "access_granted"
+    DISPENSED = "dispensed"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
 
 class TaskState(str, Enum):
@@ -34,7 +42,7 @@ class TaskState(str, Enum):
 
 
 class TaskBase(BaseModel):
-    name: str = Field(..., description="Human‑readable name of the task")
+    name: str = Field(..., description="Human-readable name of the task")
     assigned_to: Optional[str] = Field(
         None, description="Identifier of the person or system responsible for the task"
     )
@@ -47,15 +55,11 @@ class TaskCreate(TaskBase):
 
 class TaskRead(TaskBase):
     """Model returned when reading tasks from the API."""
-
     id: int
     workflow_id: int
     state: TaskState
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        orm_mode = True
 
 
 class EventBase(BaseModel):
@@ -74,9 +78,6 @@ class EventRead(EventBase):
     workflow_id: int
     created_at: datetime
 
-    class Config:
-        orm_mode = True
-
 
 class WorkflowBase(BaseModel):
     name: str = Field(..., description="Name or identifier of the workflow")
@@ -85,23 +86,21 @@ class WorkflowBase(BaseModel):
 
 class WorkflowCreate(WorkflowBase):
     """Request model for creating a new workflow."""
-    initial_tasks: Optional[List[TaskCreate]] = Field(
-        None, description="Optional list of tasks to seed the workflow with upon creation"
+    # Recommended: default to an empty list to simplify service logic and client UX.
+    initial_tasks: List[TaskCreate] = Field(
+        default_factory=list,
+        description="Optional list of tasks to seed the workflow with upon creation",
     )
 
 
 class WorkflowRead(WorkflowBase):
     """Response model for reading workflow details."""
-
     id: int
     state: WorkflowState
     created_at: datetime
     updated_at: datetime
     tasks: List[TaskRead] = Field(default_factory=list)
     events: List[EventRead] = Field(default_factory=list)
-
-    class Config:
-        orm_mode = True
 
 
 class RuleBase(BaseModel):
@@ -132,6 +131,3 @@ class RuleCreate(RuleBase):
 class RuleRead(RuleBase):
     """Model returned when reading rules from the API."""
     id: int
-
-    class Config:
-        orm_mode = True
