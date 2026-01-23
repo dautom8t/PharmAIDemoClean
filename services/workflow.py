@@ -174,8 +174,7 @@ def update_task_state(db: Session, workflow_id: int, task_id: int, new_state: Ta
     # If all tasks are completed, move workflow to next stage
     workflow = task.workflow
     workflow.update_timestamp()
-    db.commit()
-    db.refresh(workflow)
+    
     # Evaluate rules after changing a task state
     evaluate_rules_for_workflow(db, workflow)
     db.commit()
