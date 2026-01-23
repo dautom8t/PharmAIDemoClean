@@ -59,7 +59,12 @@ class Task(database.Base):
     assigned_to = Column(String, nullable=True)
     state = Column(SAEnum(TaskState), nullable=False, default=TaskState.PENDING)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(
+    DateTime,
+    default=datetime.utcnow,
+    onupdate=datetime.utcnow,
+    nullable=False
+)
 
     workflow = relationship("Workflow", back_populates="tasks")
 
