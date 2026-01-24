@@ -40,6 +40,8 @@ app.include_router(kroger_router)
 from services.demo_hub import router as demo_router
 app.include_router(demo_router)
 
+from services.bladnir_dashboard import router as dashboard_router
+app.include_router(dashboard_router)
 
 
 # CORS (dev)
