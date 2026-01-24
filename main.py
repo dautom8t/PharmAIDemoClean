@@ -34,6 +34,10 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Bladnir Tech Demo")
 
+from services.kroger_retail_pack import router as kroger_router
+app.include_router(kroger_router)
+
+
 # CORS (dev)
 app.add_middleware(
     CORSMiddleware,
