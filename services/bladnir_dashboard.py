@@ -3,14 +3,62 @@
 # =============================
 
 from fastapi import APIRouter, Body, Depends, HTTPException
-from datetime import datetime
+from datetime import datetime from models.database import get_db
 # other imports...
 
 router = APIRouter(tags=["dashboard"])
 
-DEMO_SCENARIOS = {...}
-DEMO_ROWS = []
-DEMO_BY_ID = {}
+DEMO_SCENARIOS = {
+    "happy_path": {
+        "label": "Happy Path",
+        "insurance_result": "accepted",
+        "refills_ok": True,
+        "has_insurance": True,
+    },
+    "insurance_rejected_outdated": {
+        "label": "Insurance Rejected (Outdated/Missing Info → Patient Msg)",
+        "insurance_result": "rejected",
+        "reject_reason": "Outdated or missing insurance information",
+        "refills_ok": True,
+        "has_insurance": True,
+        "patient_message": {
+            "type": "insurance_update_request",
+            "template": "Your insurance info appears outdated or missing. Please upload/confirm your active plan to continue."
+        },
+    },
+    "prior_auth_required": {
+        "label": "Prior Authorization Required",
+        "insurance_result": "pa_required",
+        "refills_ok": True,
+        "has_insurance": True,
+        "pa": {"eta_days": 2},
+        "patient_message": {
+            "type": "prior_auth_notice",
+            "template": "Your plan requires prior authorization. We’ve initiated PA; we’ll update you as soon as we hear back."
+        },
+    },
+    "no_refills_prescriber": {
+        "label": "No Refills (Request to Prescriber)",
+        "insurance_result": "accepted",
+        "refills_ok": False,
+        "has_insurance": True,
+        "prescriber_request": {
+            "type": "refill_request",
+            "template": "No refills remaining. Refill request sent to prescriber."
+        },
+    },
+    "no_insurance_discount_card": {
+        "label": "No Insurance (Apply Discount Card)",
+        "insurance_result": "no_insurance",
+        "refills_ok": True,
+        "has_insurance": False,
+        "discount_card": {"program": "DemoRxSaver", "bin": "999999", "pcn": "DEMO", "group": "SAVER", "member": "DEMO1234"},
+        "patient_message": {
+            "type": "discount_card_applied",
+            "template": "No active insurance found. We applied a discount card to help complete your prescription."
+        },
+    },
+}
 
 
 @router.get("/dashboard/api/scenarios")
