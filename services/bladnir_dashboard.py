@@ -695,22 +695,25 @@ def dashboard_ui():
     }, 3000);
   }
 
-  async function refreshAll(){
-    setStatus("Loading…");
+async function refreshAll(){
+  setStatus("Loading…");
 
-- ALL = Array.isArray(d1) ? d1 : (d1.workflows || []);
-+ const d1 = await api("/dashboard/api/workflows");
-+ const d2 = await api("/dashboard/api/automation");
-+ ALL = d1.workflows || [];
+  const d1 = await api("/dashboard/api/workflows");
+  const d2 = await api("/dashboard/api/automation");
 
-    renderBoard();
+  ALL = d1.workflows || [];
+  AUTH = d2.authorizations || {};
 
-    if(selected){
-      const wf = ALL.find(x => x.id === selected.id);
-      if(wf) renderDetails(wf);
-    }
-    setStatus("Ready");
+  renderBoard();
+
+  if(selected){
+    const wf = ALL.find(x => x.id === selected.id);
+    if(wf) renderDetails(wf);
   }
+
+  setStatus("Ready");
+}
+
 
   // boot
   (async () => {
