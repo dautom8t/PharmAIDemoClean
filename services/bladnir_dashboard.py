@@ -537,7 +537,15 @@ def dashboard_ui():
   function groupByQueue(rows){
     // Keep your current queues here. If you expanded to inbound/dispensing/etc,
     // update this object + order list accordingly.
-    const cols = { contact_manager:[], data_entry:[], pre_verification:[], rejection_resolution:[] };
+    const cols = { 
+  contact_manager: [],
+  inbound_comms: [],
+  data_entry: [],
+  pre_verification: [],
+  dispensing: [],
+  verification: [],
+};
+
     rows.forEach(r => {
       const q = r.queue || "unknown";
       if(cols[q]) cols[q].push(r);
@@ -560,11 +568,13 @@ def dashboard_ui():
     board.innerHTML = "";
 
     const order = [
-      ["contact_manager","Contact Manager"],
-      ["data_entry","Data Entry"],
-      ["pre_verification","Pre-Verification"],
-      ["rejection_resolution","Rejections"]
-    ];
+  ["contact_manager", "Contact Manager"],
+  ["inbound_comms", "Inbound Comms"],
+  ["data_entry", "Data Entry"],
+  ["pre_verification", "Pre-Verification"],
+  ["dispensing", "Dispensing"],
+  ["verification", "Verification"],
+];
 
     order.forEach(([key, title]) => {
       const col = document.createElement("div");
