@@ -271,27 +271,27 @@ def dashboard_auto_step(
             raise HTTPException(status_code=403, detail=f"Automation not authorized: {key}")
 
     def _next_queue(cur: str) -> str:
-    if cur == "contact_manager":
-        _gate("kroger.prescriber_approval_to_data_entry")
-        return "inbound_comms"
+        if cur == "contact_manager":
+            _gate("kroger.prescriber_approval_to_data_entry")
+            return "inbound_comms"
 
-    if cur == "inbound_comms":
-        _gate("kroger.prescriber_approval_to_data_entry")
-        return "data_entry"
+        if cur == "inbound_comms":
+            _gate("kroger.prescriber_approval_to_data_entry")
+            return "data_entry"
 
-    if cur == "data_entry":
-        _gate("kroger.data_entry_to_preverify_insurance")
-        return "pre_verification"
+        if cur == "data_entry":
+            _gate("kroger.data_entry_to_preverify_insurance")
+            return "pre_verification"
 
-    if cur == "pre_verification":
-        _gate("kroger.preverify_to_access_granted")
-        return "dispensing"
+        if cur == "pre_verification":
+            _gate("kroger.preverify_to_access_granted")
+            return "dispensing"
 
-    if cur == "dispensing":
-        _gate("kroger.preverify_to_access_granted")
-        return "verification"
+        if cur == "dispensing":
+            _gate("kroger.preverify_to_access_granted")
+            return "verification"
 
-    return cur
+        return cur
 
 
     # ----------------
