@@ -136,7 +136,27 @@ def seed_demo_cases(
         # IMPORTANT: must be a queue your UI renders right now.
         # If you haven't added inbound/dispensing/verification columns yet,
         # keep it in contact_manager/data_entry/pre_verification/rejection_resolution.
-        start_queue = "data_entry"
+        # Seed scenarios into different queues so all dashboard columns populate
+
+queue_map = {
+    # Outbound refill request created
+    "happy_path": "contact_manager",
+
+    # Provider office response arrives (inbound)
+    "prior_auth_required": "inbound_comms",
+
+    # Intake + typing stage
+    "no_refills_prescriber": "data_entry",
+
+    # Insurance + pharmacist checks
+    "no_insurance_discount_card": "pre_verification",
+
+    # Later-stage dispensing work
+    "insurance_rejected_outdated": "dispensing",
+}
+
+start_queue = queue_map.get(sid, "data_entry")
+
 
         raw = {
             "id": demo_id,
