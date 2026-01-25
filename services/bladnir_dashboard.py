@@ -158,7 +158,7 @@ queue_map = {
 start_queue = queue_map.get(sid, "data_entry")
 
 
-        raw = {
+    raw = {
             "id": demo_id,
             "name": f"Kroger • RX-{1000 + idx} (Demo)",
             "state": "INBOUND",
@@ -170,7 +170,7 @@ start_queue = queue_map.get(sid, "data_entry")
             ],
         }
 
-        row = {
+    row = {
             "id": demo_id,
             "name": raw["name"],
             "state": raw["state"],
