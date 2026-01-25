@@ -183,9 +183,10 @@ row = {
 }
 
 
-        DEMO_ROWS.append(row)
-        DEMO_BY_ID[demo_id] = row
-        return row
+DEMO_ROWS.append(row)
+DEMO_BY_ID[demo_id] = row
+return row
+
 
     if seed_all:
         for i, sid in enumerate(DEMO_SCENARIOS.keys(), start=1):
