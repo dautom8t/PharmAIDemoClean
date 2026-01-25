@@ -56,7 +56,19 @@ app.add_middleware(
 @app.get("/health")
 def health():
     return {"status": "ok"}
+    
+@app.get("/api/workflows")
+def dashboard_list_workflows(db=Depends(get_db)):
+    wfs = workflow_service.list_workflows(db)
+    items = [workflow_service.to_workflow_read(wf) for wf in wfs]
+    return {"workflows": items}
 
+@app.get("/api/automation")
+def dashboard_get_automation(db=Depends(get_db)):
+    # Minimal stub so the dashboard stops 404ing.
+    # You can wire this to DB later.
+    return {"authorizations": {}}
+    
 @app.get("/", response_class=HTMLResponse)
 def home():
     return """
