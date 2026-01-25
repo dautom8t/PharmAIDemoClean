@@ -103,6 +103,7 @@ def seed_demo_cases(
     scenario_id: str = Body("happy_path", embed=True),
     seed_all: bool = Body(False, embed=True),
 ):
+
     global DEMO_ROWS, DEMO_BY_ID
 
     def _mk_case(sid: str, idx: int):
