@@ -97,7 +97,57 @@ def _demo_repeat_tasks(row: dict, copies: int = 1):
             "assigned_to": template.get("assigned_to", "—"),
             "state": template.get("state", "open"),
         })
+@router.post("/dashboard/api/seed")
+def seed_demo_cases(
+    scenario_id: str = Body("happy_path", embed=True),
+    seed_all: bool = Body(False, embed=True),
+):
+    global DEMO_ROWS, DEMO_BY_ID
 
+    def _mk_case(sid: str, idx: int):
+        s = DEMO_SCENARIOS.get(sid, DEMO_SCENARIOS["happy_path"])
+        demo_id = -(len(DEMO_ROWS) + 1)
+
+        # IMPORTANT: must be a queue your UI renders right now.
+        # If you haven't added inbound/dispensing/verification columns yet,
+        # keep it in contact_manager/data_entry/pre_verification/rejection_resolution.
+        start_queue = "data_entry"
+
+        raw = {
+            "id": demo_id,
+            "name": f"Kroger • RX-{1000 + idx} (Demo)",
+            "state": "INBOUND",
+            "tasks": [{"name": "Enter NPI + patient DOB", "assigned_to": "—", "state": "open"}],
+            "events": [
+                {"event_type": "case_seeded", "payload": {"scenario_id": sid, "label": s.get("label")}},
+                {"event_type": "queue_changed", "payload": {"from": "none", "to": start_queue}},
+                {"event_type": "insurance_adjudicated", "payload": {"payer": "AutoPayer", "result": s.get("insurance_result", "accepted")}},
+            ],
+        }
+
+        row = {
+            "id": demo_id,
+            "name": raw["name"],
+            "state": raw["state"],
+            "queue": start_queue,
+            "insurance": f"AutoPayer: {s.get('insurance_result','accepted')}",
+            "tasks": len(raw["tasks"]),
+            "events": len(raw["events"]),
+            "is_kroger": True,
+            "raw": raw,
+        }
+
+        DEMO_ROWS.append(row)
+        DEMO_BY_ID[demo_id] = row
+        return row
+
+    if seed_all:
+        for i, sid in enumerate(DEMO_SCENARIOS.keys(), start=1):
+            _mk_case(sid, i)
+        return {"ok": True, "count": len(DEMO_ROWS)}
+    else:
+        row = _mk_case(scenario_id, 1)
+        return {"ok": True, "count": 1, "id": row["id"]}
 @router.post("/dashboard/api/simulate")
 def simulate_repetition(
     workflow_id: int = Body(..., embed=True),
