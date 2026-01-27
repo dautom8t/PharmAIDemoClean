@@ -14,12 +14,16 @@ ENTERPRISE_KEYS = {
 }
 
 
-def require_auth(x_api_key: str = Header(...)) -> UserContext:
+def require_auth(x_api_key: str = Header(None)) -> UserContext:
+    if not x_api_key:
+        raise HTTPException(status_code=401, detail="Missing API key")
+
     if x_api_key not in ENTERPRISE_KEYS:
         raise HTTPException(status_code=401, detail="Invalid API key")
 
     role = ENTERPRISE_KEYS[x_api_key]
     return UserContext(api_key=x_api_key, role=role)
+
 
 
 def require_role(required: str):
